@@ -113,7 +113,7 @@ jobs:
   publish:
     name: Publish extension repo
     needs: [prepare, build]
-    if: github.repository == 'yuzono/tachiyomi-extensions'
+    if: github.repository == 'Mhd257/tachiyomi-extensions'
     runs-on: 'ubuntu-24.04'
     steps:
       - name: Download APK artifacts
@@ -145,7 +145,7 @@ jobs:
       - name: Checkout repo branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          repository: yuzono/tachiyomi-repo
+          repository: Mhd257/tachiyomi-repo
           token: ${{ secrets.BOT_PAT }}
           ref: repo
           path: repo
