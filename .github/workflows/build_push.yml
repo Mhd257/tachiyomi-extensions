@@ -129,9 +129,6 @@ jobs:
         run: |
           cd ${{ github.ref_name }}
           python ./.github/scripts/move-built-apks.py
-          INSPECTOR_LINK="$(curl -s "https://api.github.com/repos/keiyoushi/extensions-inspector/releases/latest" | jq -r '.assets[0].browser_download_url')"
-          curl -L "$INSPECTOR_LINK" -o ./Inspector.jar
-          java -jar ./Inspector.jar "repo/apk" "output.json" "tmp"
           python ./.github/scripts/create-repo.py
 
       - name: Checkout repo branch
@@ -157,7 +154,7 @@ jobs:
         run: |
           cd repo
           git config user.name "Mhd257"
-          git config user.email "mhd187200@gmail.com"
+          git config user.email "mhd187200@gmail.com"  # Add your email here if you want
           git remote set-url origin https://github.com/Mhd257/manga-repo.git
           git fetch origin
           git reset origin/repo
