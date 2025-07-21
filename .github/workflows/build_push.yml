@@ -9,7 +9,7 @@ on:
       - '!**.md'
       - '!.github/**'
       - '.github/scripts/**'
-      - '.github/workflows/build_push.yml'
+      - '.github/workflows/build-push.yml'
   workflow_dispatch:
 
 concurrency:
@@ -37,9 +37,9 @@ jobs:
       - name: Set env
         id: set-env
         run: |
-          echo "LATEST_COMMIT_MESSAGE<<{delimiter}
+          echo "LATEST_COMMIT_MESSAGE<<EOF
           $(git log -1 --pretty=%B)
-          {delimiter}" >> $GITHUB_OUTPUT
+          EOF" >> $GITHUB_OUTPUT
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -85,14 +85,11 @@ jobs:
         with:
           cache-read-only: ${{ matrix.chunk.number > 1 }}
 
-      - name: Prepare signing key
-        run: echo ${{ secrets.SIGNING_KEY }} | base64 -d > signingkey.jks
+      # Signing step disabled (no signing key)
+      # - name: Prepare signing key
+      #   run: echo ${{ secrets.SIGNING_KEY }} | base64 -d > signingkey.jks
 
       - name: Build extensions (${{ matrix.chunk.number }})
-        env:
-          ALIAS: ${{ secrets.ALIAS }}
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew $(echo '${{ toJson(matrix.chunk.modules) }}' | jq -r 'join(" ")')
 
       - name: Upload APKs (${{ matrix.chunk.number }})
@@ -103,7 +100,7 @@ jobs:
           retention-days: 1
 
       - name: Clean up CI files
-        run: rm signingkey.jks
+        run: rm -f signingkey.jks || true
 
   publish:
     name: Publish extension repo
@@ -140,7 +137,7 @@ jobs:
       - name: Checkout repo branch
         uses: actions/checkout@v4
         with:
-          repository: Mhd257/manga-repo
+          repository: Mhd257/tachiyomi-repo
           token: ${{ secrets.BOT_PAT }}
           ref: repo
           path: repo
@@ -155,14 +152,12 @@ jobs:
         with:
           message: "${{ needs.prepare.outputs.latestCommitMessage }}"
           cwd: "./repo"
-          committer_name: "github-actions[bot]"
-          committer_email: "github-actions[bot]@users.noreply.github.com"
 
       - name: Sync repo
         run: |
           cd repo
           git config user.name "Mhd257"
-          git config user.email "mhd187200@gmail.com" 
+          git config user.email "mhd187200@gmail.com"
           git remote set-url origin https://github.com/Mhd257/manga-repo.git
           git fetch origin
           git reset origin/repo
