@@ -105,7 +105,7 @@ jobs:
   publish:
     name: Publish extension repo
     needs: [prepare, build]
-    if: github.repository == 'Mhd257/tachiyomi-extensions'
+    if: github.repository == 'Mhd257/manga-repo'
     runs-on: ubuntu-24.04
     steps:
       - name: Download APK artifacts
@@ -154,7 +154,7 @@ jobs:
         run: |
           cd repo
           git config user.name "Mhd257"
-          git config user.email "mhd187200@gmail.com"  # Add your email here if you want
+          git config user.email "mhd187200@gmail.com"
           git remote set-url origin https://github.com/Mhd257/manga-repo.git
           git fetch origin
           git reset origin/repo
