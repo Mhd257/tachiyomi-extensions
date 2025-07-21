@@ -85,7 +85,7 @@ jobs:
         with:
           cache-read-only: ${{ matrix.chunk.number > 1 }}
 
-      # Signing step disabled (no signing key)
+      # Signing disabled (no signing key)
       # - name: Prepare signing key
       #   run: echo ${{ secrets.SIGNING_KEY }} | base64 -d > signingkey.jks
 
@@ -105,6 +105,7 @@ jobs:
   publish:
     name: Publish extension repo
     needs: [prepare, build]
+    # Change this condition to your current repo name where workflow runs
     if: github.repository == 'Mhd257/tachiyomi-extensions'
     runs-on: ubuntu-24.04
     steps:
@@ -129,6 +130,8 @@ jobs:
         run: |
           cd ${{ github.ref_name }}
           python ./.github/scripts/move-built-apks.py
+          # Create an empty output.json to avoid file not found errors
+          echo "{}" > output.json
           python ./.github/scripts/create-repo.py
 
       - name: Checkout repo branch
@@ -154,6 +157,7 @@ jobs:
         run: |
           cd repo
           git config user.name "Mhd257"
+          # Set your email here; empty string might cause errors
           git config user.email "mhd187200@gmail.com"
           git remote set-url origin https://github.com/Mhd257/manga-repo.git
           git fetch origin
